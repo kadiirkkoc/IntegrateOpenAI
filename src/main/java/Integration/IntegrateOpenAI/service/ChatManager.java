@@ -8,7 +8,10 @@ import Integration.IntegrateOpenAI.repository.ChatGptRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 
 @Service
 public class ChatManager implements ChatService{
@@ -35,10 +38,28 @@ public class ChatManager implements ChatService{
     @Override
     public String getChat(ChatDTO chat) {
         ChatGptRequest request = new ChatGptRequest(model, chat.getMessage());
-        ChatGptResponse chatGptResponse = restTemplate.postForObject(url, request, ChatGptResponse.class);
-        return chatGptResponse.getChoices().get(0).getMessage().getContent();
-    }
+        ChatGptResponse chatGptResponse = null;
+        try {
+            chatGptResponse = restTemplate.postForObject(url, request, ChatGptResponse.class);
+        }catch (RestClientException e){
+            e.printStackTrace();
+            return "Error while fetching response from the OpenAI GPT API";
+        }
 
+        if (chatGptResponse == null){
+
+            return "Received null response from the OpenAI GPT API";
+        }
+
+        List<ChatGptResponse.Choice> choices = chatGptResponse.getChoices();
+
+        if (choices == null || choices.isEmpty()) {
+            return "No response choices available from the OpenAI GPT API";
+        }
+
+        return chatGptResponse.getChoices().get(0).getMessage().getContent();
+
+    }
 
     @Override
     public String add(ChatDTO chat) {
