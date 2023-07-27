@@ -1,10 +1,8 @@
 package Integration.IntegrateOpenAI.dtos;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
-@AllArgsConstructor
+@Data
 public class ChatDTO {
     private String message;
 
