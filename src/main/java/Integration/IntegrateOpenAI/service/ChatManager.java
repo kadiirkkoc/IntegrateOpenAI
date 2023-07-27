@@ -38,27 +38,24 @@ public class ChatManager implements ChatService{
     @Override
     public String getChat(ChatDTO chat) {
         ChatGptRequest request = new ChatGptRequest(model, chat.getMessage());
-        ChatGptResponse chatGptResponse = null;
-        try {
-            chatGptResponse = restTemplate.postForObject(url, request, ChatGptResponse.class);
-        }catch (RestClientException e){
-            e.printStackTrace();
-            return "Error while fetching response from the OpenAI GPT API";
-        }
-
-        if (chatGptResponse == null){
-
-            return "Received null response from the OpenAI GPT API";
-        }
-
-        List<ChatGptResponse.Choice> choices = chatGptResponse.getChoices();
-
-        if (choices == null || choices.isEmpty()) {
-            return "No response choices available from the OpenAI GPT API";
-        }
+        ChatGptResponse chatGptResponse = restTemplate.postForObject(url, request, ChatGptResponse.class);;
+//        try {
+//            chatGptResponse = restTemplate.postForObject(url, request, ChatGptResponse.class);
+//        }catch (RestClientException e){
+//            e.printStackTrace();
+//            return "Error while fetching response from the OpenAI GPT API";
+//        }
 
         return chatGptResponse.getChoices().get(0).getMessage().getContent();
 
+//        if (chatGptResponse == null){
+//            // I can write here exception called nullPointer but idk which one is useful for app cause this way is short and no necessary to add new calss
+//            return "Received null response from the OpenAI GPT API";
+//        }
+//
+//        if (choices == null || choices.isEmpty()) {
+//            return "No response choices available from the OpenAI GPT API";
+//        }
     }
 
     @Override
